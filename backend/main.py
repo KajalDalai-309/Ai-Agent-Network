@@ -128,6 +128,19 @@ def health():
     return {"status": "ok", "service": "AgentNet API"}
 
 
+# ── Mount Frontend Static Files (Single Deployment) ───────────────────────────
+
+import os
+from fastapi.staticfiles import StaticFiles
+
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if not os.path.exists(static_dir):
+    static_dir = os.path.join(os.path.dirname(__file__), "..", "frontend")
+
+if os.path.exists(static_dir):
+    app.mount("/", StaticFiles(directory=static_dir, html=True), name="frontend")
+
+
 # ── Dev runner ────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":

@@ -8,11 +8,7 @@ const { useState, useEffect, useCallback, useRef } = React;
 function getApiBase() {
   const saved = localStorage.getItem('AGENTNET_API');
   if (saved) return saved.replace(/\/+$/, '');
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    return 'http://localhost:8000/api/v1';
-  }
-  // If hosted on cloud, try relative path or default to current origin
-  return `${window.location.origin}/api/v1`;
+  return '/api/v1';
 }
 
 let API = getApiBase();
