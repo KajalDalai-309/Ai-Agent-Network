@@ -5,7 +5,17 @@
 
 const { useState, useEffect, useCallback, useRef } = React;
 
-const API = 'http://localhost:8000/api/v1';
+function getApiBase() {
+  const saved = localStorage.getItem('AGENTNET_API');
+  if (saved) return saved.replace(/\/+$/, '');
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:8000/api/v1';
+  }
+  // If hosted on cloud, try relative path or default to current origin
+  return `${window.location.origin}/api/v1`;
+}
+
+let API = getApiBase();
 
 // ─── Utility helpers ────────────────────────────────────────
 
@@ -605,6 +615,21 @@ function TopBar({ connected }) {
       <div className="topbar-status">
         <div className="status-dot" style={{ background: connected ? 'var(--green)' : 'var(--red)' }} />
         <span className="status-label">{connected ? '🟢 Backend Connected' : '🔴 Backend Offline'}</span>
+        <button
+          className="btn btn-ghost btn-sm"
+          style={{ fontSize: '0.72rem', padding: '2px 8px', marginLeft: 8, border: '1px solid var(--border)', cursor: 'pointer' }}
+          onClick={() => {
+            const current = localStorage.getItem('AGENTNET_API') || API;
+            const entered = prompt('Set Backend API URL (e.g. https://your-backend.onrender.com/api/v1):', current);
+            if (entered && entered.trim()) {
+              localStorage.setItem('AGENTNET_API', entered.trim());
+              window.location.reload();
+            }
+          }}
+          title="Configure backend API URL"
+        >
+          ⚙️ API Config
+        </button>
         <span style={{ fontSize: '0.78rem', color: 'var(--text3)', marginLeft: 10 }}>
           🕐 {time.toLocaleTimeString()}
         </span>
